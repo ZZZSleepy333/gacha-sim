@@ -127,22 +127,15 @@ const rollHistory = ref({
   fourStar: {},
 });
 
-const config = useRuntimeConfig();
-const baseURL = config.public.apiBase;
-
 const fetchBanners = async () => {
   try {
-    const { data, error } = await useFetch("/api/get_banners", {
-      baseURL,
-    });
+    const response = await fetch("http://localhost:3001/api/get_banners");
+    if (!response.ok) throw new Error("Không thể fetch banners");
 
-    if (error.value) {
-      throw new Error("Không thể fetch banners");
-    }
+    const data = await response.json();
+    console.log("Dữ liệu banners nhận được:", data); // Debug
 
-    console.log("Dữ liệu banners nhận được:", data.value); // Debug
-
-    banners.value = data.value || [];
+    banners.value = data || [];
   } catch (error) {
     console.error("Lỗi khi fetch banners:", error);
   }
