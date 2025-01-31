@@ -43,19 +43,22 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // MongoDB connection
+const MONGO_URI =
+  "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
+const DB_NAME = "banner_db";
+const COLLECTION_NAME = "characters";
+
 let db, charactersCollection;
-async function connectDB() {
-  try {
-    const client = await MongoClient.connect(MONGODB_URI);
-    db = client.db("banner_db");
-    charactersCollection = db.collection("characters");
-    console.log("🔗 Connected to MongoDB!");
-    return db;
-  } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
-    throw error;
-  }
-}
+MongoClient.connect(MONGO_URI, {
+  //   useNewUrlParser: true,
+  //   useUnifiedTopology: true,
+})
+  .then((client) => {
+    db = client.db(DB_NAME);
+    charactersCollection = db.collection(COLLECTION_NAME);
+    console.log("🔗 Đã kết nối MongoDB!");
+  })
+  .catch((error) => console.error("❌ Lỗi kết nối MongoDB:", error));
 
 // Routes
 app.get("/api/characters", async (req, res) => {
