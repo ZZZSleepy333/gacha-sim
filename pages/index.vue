@@ -220,8 +220,8 @@ const roll = (count) => {
             ? { ...char, count: acc.rateUp[char.name].count + 5 }
             : { ...char, count: 1 };
         } else {
-          acc.threeStar[char.name] = acc.threeStar[char.name]
-            ? { ...char, count: acc.threeStar[char.name].count + 1 }
+          acc.rateUp[char.name] = acc.rateUp[char.name]
+            ? { ...char, count: acc.rateUp[char.name].count + 5 }
             : { ...char, count: 1 };
         }
       } else if (char.rarity === 5) {
