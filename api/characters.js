@@ -55,13 +55,13 @@ const connectDB = async () => {
 export default async function handler(req, res) {
   try {
     const db = await connectDB();
-    const count = await charactersCollection.countDocuments();
-    if (count === 0) {
-      const newCharacters = await crawlCharacters();
-      if (newCharacters.length > 0) {
-        await charactersCollection.insertMany(newCharacters);
-      }
-    }
+    // const count = await charactersCollection.countDocuments();
+    // if (count === 0) {
+    //   const newCharacters = await crawlCharacters();
+    //   if (newCharacters.length > 0) {
+    //     await charactersCollection.insertMany(newCharacters);
+    //   }
+    // }
     const characters = await db.collection("characters").find().toArray();
     res.json(characters);
   } catch (error) {
