@@ -58,7 +58,7 @@
           <img
             :src="char.image"
             alt="Character"
-            class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md"
+            class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md items-center"
           />
         </a>
         <p class="mt-1 md:mt-2 font-semibold text-xs md:text-sm text-center">
