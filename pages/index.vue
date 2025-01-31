@@ -53,13 +53,13 @@
     <div v-if="selectedBanner" class="flex justify-center space-x-4 mb-6 mt-6">
       <button
         @click="roll(1)"
-        class="bg-blue-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-600"
+        class="bg-blue-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-600 mr-4"
       >
         Roll x1
       </button>
       <button
         @click="roll(10)"
-        class="bg-green-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-600"
+        class="bg-green-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-600 ml-4"
       >
         Roll x10
       </button>
@@ -82,7 +82,7 @@
                 : 'text-gray-500'
             "
           >
-            {{ char.name }} x{{ char.count }}
+            {{ char.name }} SA.LV {{ char.count }}
           </li>
         </ul>
       </div>
@@ -93,7 +93,7 @@
         <h3 class="font-bold text-lg text-orange-600">✨ 5★ Off-Rate</h3>
         <ul>
           <li v-for="(char, name) in rollHistory.fiveStar" :key="name">
-            {{ char.name }} x{{ char.count }}
+            {{ char.name }} SA.LV {{ char.count }}
           </li>
         </ul>
       </div>
@@ -104,7 +104,7 @@
         <h3 class="font-bold text-lg text-purple-600">🌟 4★ Off-Rate</h3>
         <ul>
           <li v-for="(char, name) in rollHistory.fourStar" :key="name">
-            {{ char.name }} x{{ char.count }}
+            {{ char.name }} SA.LV {{ char.count }}
           </li>
         </ul>
       </div>
@@ -211,16 +211,32 @@ const roll = (count) => {
   rollHistory.value = results.reduce(
     (acc, char) => {
       if (char.rateUp) {
-        acc.rateUp[char.name] = acc.rateUp[char.name]
-          ? { ...char, count: acc.rateUp[char.name].count + 1 }
-          : { ...char, count: 1 };
+        if (acc.rateUp[char.name] != acc.rateUp[char.name]) {
+          if (char.name.includes("5")) {
+            acc.rateUp[char.name] = acc.rateUp[char.name]
+              ? { ...char, count: acc.rateUp[char.name].count + 20 }
+              : { ...char, count: 1 };
+          } else if (char.name.includes("4")) {
+            acc.rateUp[char.name] = acc.rateUp[char.name]
+              ? { ...char, count: acc.rateUp[char.name].count + 5 }
+              : { ...char, count: 1 };
+          } else {
+            acc.threeStar[char.name] = acc.threeStar[char.name]
+              ? { ...char, count: acc.threeStar[char.name].count + 1 }
+              : { ...char, count: 1 };
+          }
+        }
       } else if (char.name.includes("5")) {
         acc.fiveStar[char.name] = acc.fiveStar[char.name]
-          ? { ...char, count: acc.fiveStar[char.name].count + 1 }
+          ? { ...char, count: acc.fiveStar[char.name].count + 20 }
           : { ...char, count: 1 };
       } else if (char.name.includes("4")) {
         acc.fourStar[char.name] = acc.fourStar[char.name]
-          ? { ...char, count: acc.fourStar[char.name].count + 1 }
+          ? { ...char, count: acc.fourStar[char.name].count + 5 }
+          : { ...char, count: 1 };
+      } else {
+        acc.threeStar[char.name] = acc.threeStar[char.name]
+          ? { ...char, count: acc.threeStar[char.name].count + 1 }
           : { ...char, count: 1 };
       }
 
