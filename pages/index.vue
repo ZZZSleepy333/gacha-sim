@@ -211,20 +211,18 @@ const roll = (count) => {
   rollHistory.value = results.reduce(
     (acc, char) => {
       if (char.rateUp) {
-        if (acc.rateUp[char.name] != acc.rateUp[char.name]) {
-          if (char.rarity === 5) {
-            acc.rateUp[char.name] = acc.rateUp[char.name]
-              ? { ...char, count: acc.rateUp[char.name].count + 20 }
-              : { ...char, count: 1 };
-          } else if (char.rarity === 4) {
-            acc.rateUp[char.name] = acc.rateUp[char.name]
-              ? { ...char, count: acc.rateUp[char.name].count + 5 }
-              : { ...char, count: 1 };
-          } else {
-            acc.threeStar[char.name] = acc.threeStar[char.name]
-              ? { ...char, count: acc.threeStar[char.name].count + 1 }
-              : { ...char, count: 1 };
-          }
+        if (char.rarity === 5) {
+          acc.rateUp[char.name] = acc.rateUp[char.name]
+            ? { ...char, count: acc.rateUp[char.name].count + 20 }
+            : { ...char, count: 1 };
+        } else if (char.rarity === 4) {
+          acc.rateUp[char.name] = acc.rateUp[char.name]
+            ? { ...char, count: acc.rateUp[char.name].count + 5 }
+            : { ...char, count: 1 };
+        } else {
+          acc.threeStar[char.name] = acc.threeStar[char.name]
+            ? { ...char, count: acc.threeStar[char.name].count + 1 }
+            : { ...char, count: 1 };
         }
       } else if (char.rarity === 5) {
         acc.fiveStar[char.name] = acc.fiveStar[char.name]
