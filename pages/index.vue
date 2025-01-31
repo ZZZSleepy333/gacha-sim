@@ -129,7 +129,7 @@ const rollHistory = ref({
 
 const fetchBanners = async () => {
   try {
-    const response = await fetch("http://localhost:3001/api/get_banners");
+    const response = await fetch("/api/banners");
     if (!response.ok) throw new Error("Không thể fetch banners");
 
     const data = await response.json();
