@@ -212,11 +212,11 @@ const roll = (count) => {
     (acc, char) => {
       if (char.rateUp) {
         if (acc.rateUp[char.name] != acc.rateUp[char.name]) {
-          if (char.name.includes("5")) {
+          if (char.rarity === 5) {
             acc.rateUp[char.name] = acc.rateUp[char.name]
               ? { ...char, count: acc.rateUp[char.name].count + 20 }
               : { ...char, count: 1 };
-          } else if (char.name.includes("4")) {
+          } else if (char.rarity === 4) {
             acc.rateUp[char.name] = acc.rateUp[char.name]
               ? { ...char, count: acc.rateUp[char.name].count + 5 }
               : { ...char, count: 1 };
@@ -226,11 +226,11 @@ const roll = (count) => {
               : { ...char, count: 1 };
           }
         }
-      } else if (char.name.includes("5")) {
+      } else if (char.rarity === 5) {
         acc.fiveStar[char.name] = acc.fiveStar[char.name]
           ? { ...char, count: acc.fiveStar[char.name].count + 20 }
           : { ...char, count: 1 };
-      } else if (char.name.includes("4")) {
+      } else if (char.rarity === 4) {
         acc.fourStar[char.name] = acc.fourStar[char.name]
           ? { ...char, count: acc.fourStar[char.name].count + 5 }
           : { ...char, count: 1 };
