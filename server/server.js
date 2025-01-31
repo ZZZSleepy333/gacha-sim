@@ -116,17 +116,11 @@ app.post("/api/banners", upload.single("image"), async (req, res) => {
 
 app.get("/api/get_banners", async (req, res) => {
   try {
-    if (!db) await connectDB();
-
-    const banners = await db
-      .collection("banners")
-      .find()
-      .sort({ createdAt: -1 })
-      .toArray();
+    const banners = await db.collection("banners").find({}).toArray();
     res.json(banners);
   } catch (error) {
-    console.error("❌ Error fetching banners:", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Lỗi khi lấy danh sách banners:", error);
+    res.status(500).json({ error: "Lỗi server" });
   }
 });
 
