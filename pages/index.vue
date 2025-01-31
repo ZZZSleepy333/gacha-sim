@@ -127,11 +127,14 @@ const rollHistory = ref({
   fourStar: {},
 });
 
+const config = useRuntimeConfig();
+const baseURL = config.public.apiBase;
+
 const fetchBanners = async () => {
   try {
-    const response = await fetch(
-      "https://gacha-sim.vercel.app/api/get_banners"
-    );
+    const response = await useFetch("/api/get_banners", {
+      baseURL,
+    });
     if (!response.ok) throw new Error("Không thể fetch banners");
 
     const data = await response.json();

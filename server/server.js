@@ -7,53 +7,133 @@ import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
 
-//const multer = require("multer");
+const app = express();
 
+// Sử dụng biến môi trường
+const MONGODB_URI =
+  process.env.MONGODB_URI ||
+  "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || "dhdhxoqxs";
+const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || "224474966178738";
+const CLOUDINARY_API_SECRET =
+  process.env.CLOUDINARY_API_SECRET || "eBDr5tU0_CyUI2pc5Kn8OGmDEmQ";
+
+// Cloudinary config
 cloudinary.config({
-  cloud_name: "dhdhxoqxs",
-  api_key: 224474966178738,
-  api_secret: "eBDr5tU0_CyUI2pc5Kn8OGmDEmQ",
+  cloud_name: CLOUDINARY_CLOUD_NAME,
+  api_key: CLOUDINARY_API_KEY,
+  api_secret: CLOUDINARY_API_SECRET,
 });
 
-const app = express();
-const PORT = "https://gacha-sim.vercel.app/";
+// Middleware
 app.use(cors());
-app.use(express.json()); // ✅ Fix lỗi req.body undefined
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Cloudinary storage config
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "banners", // Tạo folder trong Cloudinary
-    format: async (req, file) => "png", // Chuyển thành PNG
-    public_id: (req, file) => file.originalname.split(".")[0], // Dùng tên file làm ID
+    folder: "banners",
+    format: async () => "png",
+    public_id: (req, file) => file.originalname.split(".")[0],
   },
 });
 
 const upload = multer({ storage: storage });
 
-// Kết nối MongoDB
-const MONGO_URI =
-  "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
-const DB_NAME = "banner_db";
-const COLLECTION_NAME = "characters";
-
+// MongoDB connection
 let db, charactersCollection;
-MongoClient.connect(MONGO_URI, {
-  //   useNewUrlParser: true,
-  //   useUnifiedTopology: true,
-})
-  .then((client) => {
-    db = client.db(DB_NAME);
-    charactersCollection = db.collection(COLLECTION_NAME);
-    console.log("🔗 Đã kết nối MongoDB!");
-  })
-  .catch((error) => console.error("❌ Lỗi kết nối MongoDB:", error));
-
-// Hàm crawl dữ liệu từ website
-const crawlCharacters = async () => {
+async function connectDB() {
   try {
-    const url = "https://housamo-skill.netlify.app/charas/"; // Thay đổi URL nếu cần
+    const client = await MongoClient.connect(MONGODB_URI);
+    db = client.db("banner_db");
+    charactersCollection = db.collection("characters");
+    console.log("🔗 Connected to MongoDB!");
+    return db;
+  } catch (error) {
+    console.error("❌ MongoDB connection error:", error);
+    throw error;
+  }
+}
+
+// Routes
+app.get("/api/characters", async (req, res) => {
+  try {
+    if (!db) await connectDB();
+
+    const count = await charactersCollection.countDocuments();
+    if (count === 0) {
+      console.log("⚡ Empty database, crawling data...");
+      const newCharacters = await crawlCharacters();
+      if (newCharacters.length > 0) {
+        await charactersCollection.insertMany(newCharacters);
+        console.log(`✅ Saved ${newCharacters.length} characters to MongoDB!`);
+      }
+    }
+    const characters = await charactersCollection.find().toArray();
+    res.json(characters);
+  } catch (error) {
+    console.error("❌ Error fetching data:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.post("/api/banners", upload.single("image"), async (req, res) => {
+  try {
+    if (!db) await connectDB();
+
+    const { name, characters } = req.body;
+    if (!name || !characters) {
+      return res
+        .status(400)
+        .json({ error: "Name and character list are required!" });
+    }
+
+    let parsedCharacters;
+    try {
+      parsedCharacters =
+        typeof characters === "string" ? JSON.parse(characters) : characters;
+    } catch (err) {
+      return res.status(400).json({ error: "Invalid character data!" });
+    }
+
+    const imageUrl = req.file?.path || null;
+
+    const result = await db.collection("banners").insertOne({
+      name,
+      characters: parsedCharacters,
+      imageUrl,
+      createdAt: new Date(),
+    });
+
+    res.json({ message: "Banner saved!", id: result.insertedId, imageUrl });
+  } catch (error) {
+    console.error("❌ Error saving banner:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+app.get("/api/get_banners", async (req, res) => {
+  try {
+    if (!db) await connectDB();
+
+    const banners = await db
+      .collection("banners")
+      .find()
+      .sort({ createdAt: -1 })
+      .toArray();
+    res.json(banners);
+  } catch (error) {
+    console.error("❌ Error fetching banners:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Crawling function
+async function crawlCharacters() {
+  try {
+    const url = "https://housamo-skill.netlify.app/charas/";
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
     const characters = [];
@@ -65,11 +145,9 @@ const crawlCharacters = async () => {
       const rarity = $el.attr("data-rarity");
       const imgSrc = $el.find("img").attr("src");
 
-      // Xử lý tags
-      let tags = [];
+      const tags = [];
       if (name.includes("Standard")) tags.push("Normal");
       else tags.push("Limited");
-
       if (!name.includes("(")) tags.push("New");
 
       characters.push({
@@ -83,93 +161,18 @@ const crawlCharacters = async () => {
 
     return characters;
   } catch (error) {
-    console.error("❌ Lỗi khi crawl dữ liệu:", error);
+    console.error("❌ Error crawling data:", error);
     return [];
   }
-};
+}
 
-app.get("/api/characters", async (req, res) => {
-  try {
-    const count = await charactersCollection.countDocuments();
-    if (count === 0) {
-      console.log("⚡ Dữ liệu trống, tiến hành crawl...");
-      const newCharacters = await crawlCharacters();
-      if (newCharacters.length > 0) {
-        await charactersCollection.insertMany(newCharacters);
-        console.log("✅ Đã lưu ${newCharacters.length} nhân vật vào MongoDB!");
-      }
-    }
-    const characters = await charactersCollection.find().toArray();
-    res.json(characters);
-  } catch (error) {
-    console.error("❌ Lỗi lấy dữ liệu MongoDB:", error);
-    res.status(500).json({ error: "Lỗi server" });
-  }
-});
+// For local development
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () =>
+    console.log(`🚀 Server running on http://localhost:${PORT}`)
+  );
+}
 
-// API lấy danh sách nhân vật từ MongoDB
-app.post("/api/banners", upload.single("image"), async (req, res) => {
-  try {
-    const { name, characters } = req.body;
-    if (!name || !characters) {
-      return res
-        .status(400)
-        .json({ error: "Tên và danh sách nhân vật là bắt buộc!" });
-    }
-
-    let parsedCharacters;
-    try {
-      parsedCharacters = JSON.parse(characters); // Chuyển JSON string thành object
-    } catch (err) {
-      return res.status(400).json({ error: "Dữ liệu nhân vật không hợp lệ!" });
-    }
-
-    let imageUrl = req.file ? req.file.path : null; // ✅ Lấy URL ảnh từ Cloudinary
-
-    const result = await db.collection("banners").insertOne({
-      name,
-      characters: parsedCharacters, // ✅ Lưu toàn bộ thông tin nhân vật
-      imageUrl,
-    });
-
-    res.json({ message: "Banner đã lưu!", id: result.insertedId, imageUrl });
-  } catch (error) {
-    console.error("❌ Lỗi khi lưu banner:", error);
-    res.status(500).json({ error: "Lỗi server" });
-  }
-});
-
-app.post("/api/banners", upload.single("image"), async (req, res) => {
-  try {
-    const { name, characters } = req.body;
-    if (!name || !characters || characters.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Tên và danh sách nhân vật là bắt buộc!" });
-    }
-
-    let imageUrl = req.file ? req.file.path : null; // ✅ Lấy URL ảnh từ Cloudinary
-
-    const result = await db
-      .collection("banners")
-      .insertOne({ name, characters, imageUrl });
-    res.json({ message: "Banner đã lưu!", id: result.insertedId, imageUrl });
-  } catch (error) {
-    console.error("❌ Lỗi khi lưu banner:", error);
-    res.status(500).json({ error: "Lỗi server" });
-  }
-});
-
-app.get("/api/get_banners", async (req, res) => {
-  try {
-    const banners = await db.collection("banners").find({}).toArray();
-    res.json(banners);
-  } catch (error) {
-    console.error("❌ Lỗi khi lấy danh sách banners:", error);
-    res.status(500).json({ error: "Lỗi server" });
-  }
-});
-
-app.listen(PORT, () =>
-  console.log("🚀 Server chạy tại http://localhost:${PORT}")
-);
+// For Vercel
+export default app;
