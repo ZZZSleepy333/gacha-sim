@@ -16,7 +16,7 @@ cloudinary.config({
 });
 
 const app = express();
-const PORT = 3001;
+const PORT = "https://gacha-sim.vercel.app/";
 app.use(cors());
 app.use(express.json()); // ✅ Fix lỗi req.body undefined
 app.use(express.urlencoded({ extended: true }));

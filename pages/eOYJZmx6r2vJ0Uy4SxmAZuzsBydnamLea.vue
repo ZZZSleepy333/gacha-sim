@@ -112,7 +112,7 @@ const showMessage = ref(false);
 // ✅ Fetch nhân vật từ API
 const fetchCharacters = async () => {
   try {
-    const response = await fetch("http://localhost:3001/api/characters");
+    const response = await fetch("https://gacha-sim.vercel.app/api/characters");
     const data = await response.json();
     console.log("Dữ liệu nhận được:", data);
     characters.value = data || [];
@@ -198,7 +198,7 @@ const saveInfo = async () => {
   }
 
   try {
-    const response = await fetch("http://localhost:3001/api/banners", {
+    const response = await fetch("https://gacha-sim.vercel.app/api/banners", {
       method: "POST",
       body: formData,
     });
