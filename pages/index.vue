@@ -173,19 +173,19 @@ const roll = (count) => {
       if (rarity === 5) {
         chosenChar =
           Math.random() * 100 < 70 && rateUpPool.length > 0
-            ? rateUpPool[Math.random() * rateUpPool.length]
-            : rarityPool[Math.random() * rarityPool.length];
+            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
+            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
       } else if (rarity === 4) {
         chosenChar =
           Math.random() * 100 < rateUpPool.length * 10 && rateUpPool.length > 0
-            ? rateUp[Math.random() * rateUpPool.length]
-            : rarityPool[Math.random() * rarityPool.length];
+            ? rateUp[Math.floor(Math.random() * rateUpPool.length)]
+            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
       } else {
         chosenChar =
           Math.random() * 100 < (rateUpPool.length - 1) * 10 &&
           rateUpPool.length > 0
-            ? rateUpPool[Math.random() * rateUpPool.length]
-            : rarityPool[Math.random() * rarityPool.length];
+            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
+            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
       }
     }
 
