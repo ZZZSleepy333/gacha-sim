@@ -1,4 +1,3 @@
-import express from "express";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { MongoClient } from "mongodb";
@@ -6,7 +5,7 @@ import cors from "cors";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import http from "http";
+import { express } from "express";
 
 //const multer = require("multer");
 
@@ -17,7 +16,7 @@ cloudinary.config({
 });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3001;
 app.use(cors());
 app.use(express.json()); // ✅ Fix lỗi req.body undefined
 app.use(express.urlencoded({ extended: true }));
@@ -171,12 +170,6 @@ app.get("/api/get_banners", async (req, res) => {
   }
 });
 
-export default app;
-
-const server = http.createServer(app);
-
-export { app, server };
-
-// server.listen(PORT, () => {
-//   console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
-// });
+app.listen(PORT, () =>
+  console.log("🚀 Server chạy tại http://localhost:${PORT}")
+);
