@@ -175,6 +175,8 @@ export default app;
 
 const server = http.createServer(app);
 
-server.listen(PORT, () => {
-  console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
-});
+export { app, server };
+
+// server.listen(PORT, () => {
+//   console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
+// });
