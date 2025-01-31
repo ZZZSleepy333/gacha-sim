@@ -178,7 +178,7 @@ const roll = (count) => {
       } else if (rarity === 4) {
         chosenChar =
           Math.random() * 100 < rateUpPool.length * 10 && rateUpPool.length > 0
-            ? rateUpP[Math.random() * rateUpPool.length]
+            ? rateUp[Math.random() * rateUpPool.length]
             : rarityPool[Math.random() * rarityPool.length];
       } else {
         chosenChar =
