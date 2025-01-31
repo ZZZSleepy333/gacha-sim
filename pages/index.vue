@@ -42,8 +42,18 @@
     <h2 class="text-lg md:text-xl font-bold mb-6 text-center">
       Congratulations! You got
     </h2>
-    <div class="grid grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
-      <div v-for="(char, name) in rollResults" :key="name">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+      <div
+        v-for="(char, name) in rollResults"
+        :key="name"
+        :class="
+          char.rarity === 5
+            ? 'bg-red-500 text-white'
+            : char.rarity === 4
+            ? 'bg-purple-500 text-white'
+            : 'text-gray-500'
+        "
+      >
         <a :href="char.link" target="_blank">
           <img
             :src="char.image"
