@@ -46,7 +46,6 @@ MongoClient.connect(MONGO_URI, {
   .then((client) => {
     db = client.db(DB_NAME);
     charactersCollection = db.collection(COLLECTION_NAME);
-    console.log("🔗 Đã kết nối MongoDB!");
   })
   .catch((error) => console.error("❌ Lỗi kết nối MongoDB:", error));
 
@@ -92,11 +91,9 @@ app.get("/api/characters", async (req, res) => {
   try {
     const count = await charactersCollection.countDocuments();
     if (count === 0) {
-      console.log("⚡ Dữ liệu trống, tiến hành crawl...");
       const newCharacters = await crawlCharacters();
       if (newCharacters.length > 0) {
         await charactersCollection.insertMany(newCharacters);
-        console.log("✅ Đã lưu ${newCharacters.length} nhân vật vào MongoDB!");
       }
     }
     const characters = await charactersCollection.find().toArray();

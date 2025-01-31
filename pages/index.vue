@@ -133,7 +133,6 @@ const fetchBanners = async () => {
     if (!response.ok) throw new Error("Không thể fetch banners");
 
     const data = await response.json();
-    console.log("Dữ liệu banners nhận được:", data); // Debug
 
     banners.value = data || [];
   } catch (error) {
@@ -147,7 +146,7 @@ const selectBanner = (banner) => {
 
 const roll = (count) => {
   rollCount.value = rollCount.value + count * 5;
-  console.log("rollCount", rollCount.value);
+
   if (!selectedBanner.value) return;
 
   let results = [];
@@ -157,7 +156,7 @@ const roll = (count) => {
   for (let i = 0; i < count; i++) {
     let rarityChance = Math.random() * 100;
     let rarity = 3;
-    console.log("rarity", rarityChance);
+
     if (i === 9) {
       rarityChance = Math.random() * 100;
 
@@ -209,11 +208,8 @@ const roll = (count) => {
   }
   rollResults.value = results;
 
-  console.log("Kết quả Roll:", rollResults.value); // Debug
   rollHistory.value = results.reduce(
     (acc, char) => {
-      console.log("char", char);
-
       if (char.rateUp) {
         acc.rateUp[char.name] = acc.rateUp[char.name]
           ? { ...char, count: acc.rateUp[char.name].count + 1 }

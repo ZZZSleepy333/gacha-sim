@@ -114,7 +114,7 @@ const fetchCharacters = async () => {
   try {
     const response = await fetch("https://gacha-sim.vercel.app/api/characters");
     const data = await response.json();
-    console.log("Dữ liệu nhận được:", data);
+
     characters.value = data || [];
   } catch (error) {
     console.error("Lỗi khi lấy dữ liệu nhân vật:", error);
@@ -204,7 +204,7 @@ const saveInfo = async () => {
     });
 
     const result = await response.json();
-    console.log("✅ Kết quả lưu:", result);
+
     saveMessage.value = "Lưu thành công!";
   } catch (error) {
     console.error("❌ Lỗi khi lưu banner:", error);
@@ -224,7 +224,6 @@ const selectedImage = ref(null);
 
 const uploadImage = (event) => {
   selectedImage.value = event.target.files[0];
-  console.log("📸 Ảnh tải lên:", selectedImage.value);
 };
 
 onMounted(fetchCharacters);
