@@ -180,11 +180,18 @@ const roll = (count) => {
     // Loại bỏ nhân vật có count >= 100
     const rarityPool = characters.filter((char) => {
       const historyCount =
-        rollHistory.value.rateUp[char.name]?.count ||
-        rollHistory.value.fiveStar[char.name]?.count ||
-        rollHistory.value.fourStar[char.name]?.count ||
-        rollHistory.value.threeStar[char.name]?.count ||
-        0;
+        (rollHistory.value.rateUp[char.name]
+          ? rollHistory.value.rateUp[char.name].count
+          : 0) +
+        (rollHistory.value.fiveStar[char.name]
+          ? rollHistory.value.fiveStar[char.name].count
+          : 0) +
+        (rollHistory.value.fourStar[char.name]
+          ? rollHistory.value.fourStar[char.name].count
+          : 0) +
+        (rollHistory.value.threeStar[char.name]
+          ? rollHistory.value.threeStar[char.name].count
+          : 0);
       return char.rarity === rarity && historyCount < 100;
     });
 
@@ -235,11 +242,18 @@ const roll = (count) => {
   rollHistory.value = results.reduce(
     (acc, char) => {
       const historyCount =
-        acc.rateUp[char.name]?.count ||
-        acc.fiveStar[char.name]?.count ||
-        acc.fourStar[char.name]?.count ||
-        acc.threeStar[char.name]?.count ||
-        0;
+        (rollHistory.value.rateUp[char.name]
+          ? rollHistory.value.rateUp[char.name].count
+          : 0) +
+        (rollHistory.value.fiveStar[char.name]
+          ? rollHistory.value.fiveStar[char.name].count
+          : 0) +
+        (rollHistory.value.fourStar[char.name]
+          ? rollHistory.value.fourStar[char.name].count
+          : 0) +
+        (rollHistory.value.threeStar[char.name]
+          ? rollHistory.value.threeStar[char.name].count
+          : 0);
 
       if (historyCount < 100) {
         if (char.rateUp) {
