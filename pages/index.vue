@@ -1,13 +1,15 @@
 <template>
-  <div class="p-6 max-w-7xl mx-auto">
-    <h2 class="text-2xl font-bold mb-4 text-center">Pick a banner to roll</h2>
+  <div class="p-4 md:p-6 max-w-7xl mx-auto">
+    <h2 class="text-xl md:text-2xl font-bold mb-4 text-center">
+      Pick a banner to roll
+    </h2>
 
     <!-- Danh sách Banners -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
       <div
         v-for="banner in banners"
         :key="banner._id"
-        class="cursor-pointer border rounded-lg p-3 shadow-md transition duration-300 hover:shadow-lg"
+        class="cursor-pointer border rounded-lg p-2 md:p-3 shadow-md transition duration-300 hover:shadow-lg"
         :class="
           selectedBanner && selectedBanner._id === banner._id
             ? 'border-blue-500 bg-blue-100'
@@ -18,58 +20,69 @@
         <img
           :src="banner.imageUrl"
           alt="Banner"
-          class="w-full h-32 object-cover rounded"
+          class="w-full h-24 md:h-32 object-cover rounded"
         />
-        <p class="text-center mt-2 font-semibold">{{ banner.name }}</p>
+        <p class="text-center mt-2 font-semibold text-sm md:text-base">
+          {{ banner.name }}
+        </p>
       </div>
     </div>
 
     <!-- Hiển thị số lần quay -->
-    <p class="text-lg font-semibold text-center mt-2">
+    <p class="text-base md:text-lg font-semibold text-center mt-2">
       Transient stones spent: {{ rollCount }}
       <img
-        src="/public/icon_item_stone.png "
+        src="/public/icon_item_stone.png"
         alt="Stone"
-        class="w-6 h-6 inline-block"
+        class="w-5 h-5 md:w-6 md:h-6 inline-block"
       />
     </p>
 
     <!-- Danh sách Kết Quả -->
-    <h2 class="text-xl font-bold mb-8 text-center">Congratulations! You got</h2>
-    <div class="grid grid-cols-5 gap-4">
-      <div v-for="(char, name) in rollResults" :key="name" class="">
+    <h2 class="text-lg md:text-xl font-bold mb-6 text-center">
+      Congratulations! You got
+    </h2>
+    <div class="grid grid-cols-3 md:grid-cols-5 gap-3 md:gap-4">
+      <div v-for="(char, name) in rollResults" :key="name">
         <a :href="char.link" target="_blank">
           <img
             :src="char.image"
             alt="Character"
-            class="w-24 h-24 object-cover rounded-lg shadow-md"
+            class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md"
           />
         </a>
-        <p class="mt-2 font-semibold">{{ char.name }}</p>
+        <p class="mt-1 md:mt-2 font-semibold text-xs md:text-sm text-center">
+          {{ char.name }}
+        </p>
       </div>
     </div>
 
     <!-- Nút Roll -->
-    <div v-if="selectedBanner" class="flex justify-center space-x-4 mb-6 mt-6">
+    <div
+      v-if="selectedBanner"
+      class="flex justify-center space-x-3 md:space-x-4 mb-4 md:mb-6 mt-4 md:mt-6"
+    >
       <button
         @click="roll(1)"
-        class="bg-blue-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-blue-600 mr-4"
+        class="bg-blue-500 text-white px-4 py-2 md:px-5 md:py-2 rounded-lg shadow-md hover:bg-blue-600"
       >
         Roll x1
       </button>
       <button
         @click="roll(10)"
-        class="bg-green-500 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-600 ml-4"
+        class="bg-green-500 text-white px-4 py-2 md:px-5 md:py-2 rounded-lg shadow-md hover:bg-green-600"
       >
         Roll x10
       </button>
     </div>
 
     <!-- Lịch sử Roll -->
-    <h2 class="text-xl font-bold mb-4 text-center">History</h2>
-    <div class="grid grid-cols-3 gap-4">
-      <div class="bg-yellow-100 p-4 rounded-lg shadow-md">
-        <h3 class="font-bold text-lg text-yellow-600">⭐ Rate-up</h3>
+    <h2 class="text-lg md:text-xl font-bold mb-4 text-center">History</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
+      <div
+        class="bg-yellow-100 p-3 md:p-4 rounded-lg shadow-md text-sm md:text-base"
+      >
+        <h3 class="font-bold text-yellow-600">⭐ Rate-up</h3>
         <ul>
           <li
             v-for="(char, name) in rollHistory.rateUp"
@@ -88,9 +101,9 @@
       </div>
 
       <div
-        class="bg-orange-100 p-4 rounded-lg shadow-md text-gray-500 font-bold"
+        class="bg-orange-100 p-3 md:p-4 rounded-lg shadow-md text-gray-500 font-bold text-sm md:text-base"
       >
-        <h3 class="font-bold text-lg text-orange-600">✨ 5★ Off-Rate</h3>
+        <h3 class="font-bold text-orange-600">✨ 5★ Off-Rate</h3>
         <ul>
           <li v-for="(char, name) in rollHistory.fiveStar" :key="name">
             {{ char.name }} SA.LV {{ char.count }}
@@ -99,9 +112,9 @@
       </div>
 
       <div
-        class="bg-purple-100 p-4 rounded-lg shadow-md text-gray-500 font-semibold"
+        class="bg-purple-100 p-3 md:p-4 rounded-lg shadow-md text-gray-500 font-semibold text-sm md:text-base"
       >
-        <h3 class="font-bold text-lg text-purple-600">🌟 4★ Off-Rate</h3>
+        <h3 class="font-bold text-purple-600">🌟 4★ Off-Rate</h3>
         <ul>
           <li v-for="(char, name) in rollHistory.fourStar" :key="name">
             {{ char.name }} SA.LV {{ char.count }}
@@ -145,48 +158,57 @@ const selectBanner = (banner) => {
 };
 
 const roll = (count) => {
-  rollCount.value = rollCount.value + count * 5;
+  rollCount.value += count * 5;
 
   if (!selectedBanner.value) return;
 
   let results = [];
   const characters = selectedBanner.value.characters;
-  //rollCount += count;
 
   for (let i = 0; i < count; i++) {
     let rarityChance = Math.random() * 100;
     let rarity = 3;
 
     if (i === 9) {
-      rarityChance = Math.floor(Math.random() * 100);
-
+      rarityChance = Math.random() * 100;
       rarity = rarityChance < 96 ? 4 : 5;
     } else {
       if (rarityChance < 2) rarity = 5;
       else if (rarityChance < 18) rarity = 4;
     }
 
-    const rarityPool = characters.filter((char) => char.rarity === rarity);
+    // Loại bỏ nhân vật có count >= 100
+    const rarityPool = characters.filter((char) => {
+      const historyCount =
+        rollHistory.value.rateUp[char.name]?.count ||
+        rollHistory.value.fiveStar[char.name]?.count ||
+        rollHistory.value.fourStar[char.name]?.count ||
+        rollHistory.value.threeStar[char.name]?.count ||
+        0;
+      return char.rarity === rarity && historyCount < 100;
+    });
+
+    if (rarityPool.length === 0) continue; // Nếu không còn nhân vật hợp lệ, bỏ qua lượt roll
+
     let chosenChar;
-    if (rarityPool.length > 0) {
-      const rateUpPool = rarityPool.filter((char) => char.rateUp);
-      if (rarity === 5) {
-        chosenChar =
-          Math.random() * 100 < 70 && rateUpPool.length > 0
-            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
-      } else if (rarity === 4) {
-        chosenChar =
-          Math.random() * 100 < rateUpPool.length * 10 && rateUpPool.length > 0
-            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
-      } else {
-        chosenChar =
-          Math.random() * 100 < (rateUpPool.length - 1) * 10 &&
-          rateUpPool.length > 0
-            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
-      }
+    const rateUpPool = rarityPool.filter((char) => char.rateUp);
+
+    if (rarity === 5) {
+      chosenChar =
+        Math.random() * 100 < 70 && rateUpPool.length > 0
+          ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
+          : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+    } else if (rarity === 4) {
+      chosenChar =
+        Math.random() * 100 < rateUpPool.length * 10 && rateUpPool.length > 0
+          ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
+          : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+    } else {
+      chosenChar =
+        Math.random() * 100 < (rateUpPool.length - 1) * 10 &&
+        rateUpPool.length > 0
+          ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
+          : rarityPool[Math.floor(Math.random() * rarityPool.length)];
     }
 
     if (chosenChar) {
@@ -195,52 +217,61 @@ const roll = (count) => {
       );
       if (existingChar) {
         existingChar.count++;
+      } else {
+        results.push({
+          name: chosenChar.name,
+          image: chosenChar.imgSrc,
+          link: chosenChar.link,
+          count: 1,
+          rateUp: chosenChar.rateUp,
+          rarity: chosenChar.rarity,
+        });
       }
-      results.push({
-        name: chosenChar.name,
-        image: chosenChar.imgSrc,
-        link: chosenChar.link,
-        count: 1,
-        rateUp: chosenChar.rateUp,
-        rarity: chosenChar.rarity,
-      });
     }
   }
-  rollResults.value = results;
 
+  // Cập nhật lịch sử roll
+  rollResults.value = results;
   rollHistory.value = results.reduce(
     (acc, char) => {
-      if (char.rateUp) {
-        if (char.rarity === 5) {
-          acc.rateUp[char.name] = acc.rateUp[char.name]
-            ? { ...char, count: acc.rateUp[char.name].count + 20 }
-            : { ...char, count: 1 };
+      const historyCount =
+        acc.rateUp[char.name]?.count ||
+        acc.fiveStar[char.name]?.count ||
+        acc.fourStar[char.name]?.count ||
+        acc.threeStar[char.name]?.count ||
+        0;
+
+      if (historyCount < 100) {
+        if (char.rateUp) {
+          if (char.rarity === 5) {
+            acc.rateUp[char.name] = acc.rateUp[char.name]
+              ? { ...char, count: acc.rateUp[char.name].count + 20 }
+              : { ...char, count: 20 };
+          } else if (char.rarity === 4) {
+            acc.rateUp[char.name] = acc.rateUp[char.name]
+              ? { ...char, count: acc.rateUp[char.name].count + 5 }
+              : { ...char, count: 5 };
+          } else {
+            acc.rateUp[char.name] = acc.rateUp[char.name]
+              ? { ...char, count: acc.rateUp[char.name].count + 1 }
+              : { ...char, count: 1 };
+          }
+        } else if (char.rarity === 5) {
+          acc.fiveStar[char.name] = acc.fiveStar[char.name]
+            ? { ...char, count: acc.fiveStar[char.name].count + 20 }
+            : { ...char, count: 20 };
         } else if (char.rarity === 4) {
-          acc.rateUp[char.name] = acc.rateUp[char.name]
-            ? { ...char, count: acc.rateUp[char.name].count + 5 }
-            : { ...char, count: 1 };
+          acc.fourStar[char.name] = acc.fourStar[char.name]
+            ? { ...char, count: acc.fourStar[char.name].count + 5 }
+            : { ...char, count: 5 };
         } else {
-          acc.rateUp[char.name] = acc.rateUp[char.name]
-            ? { ...char, count: acc.rateUp[char.name].count + 1 }
+          acc.threeStar[char.name] = acc.threeStar[char.name]
+            ? { ...char, count: acc.threeStar[char.name].count + 1 }
             : { ...char, count: 1 };
         }
-      } else if (char.rarity === 5) {
-        acc.fiveStar[char.name] = acc.fiveStar[char.name]
-          ? { ...char, count: acc.fiveStar[char.name].count + 20 }
-          : { ...char, count: 1 };
-      } else if (char.rarity === 4) {
-        acc.fourStar[char.name] = acc.fourStar[char.name]
-          ? { ...char, count: acc.fourStar[char.name].count + 5 }
-          : { ...char, count: 1 };
-      } else {
-        acc.threeStar[char.name] = acc.threeStar[char.name]
-          ? { ...char, count: acc.threeStar[char.name].count + 1 }
-          : { ...char, count: 1 };
       }
-
       return acc;
     },
-    // 🛠 Giữ lại lịch sử cũ bằng cách lấy giá trị cũ làm `initialValue`
     {
       rateUp: { ...rollHistory.value.rateUp },
       fiveStar: { ...rollHistory.value.fiveStar },
