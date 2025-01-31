@@ -132,15 +132,17 @@ const baseURL = config.public.apiBase;
 
 const fetchBanners = async () => {
   try {
-    const response = await useFetch("/api/get_banners", {
+    const { data, error } = await useFetch("/api/get_banners", {
       baseURL,
     });
-    if (!response.ok) throw new Error("Không thể fetch banners");
 
-    const data = await response.json();
-    console.log("Dữ liệu banners nhận được:", data); // Debug
+    if (error.value) {
+      throw new Error("Không thể fetch banners");
+    }
 
-    banners.value = data || [];
+    console.log("Dữ liệu banners nhận được:", data.value); // Debug
+
+    banners.value = data.value || [];
   } catch (error) {
     console.error("Lỗi khi fetch banners:", error);
   }
