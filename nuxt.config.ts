@@ -7,10 +7,12 @@ export default defineNuxtConfig({
     plugins: [tailwindcss()],
   },
   pages: true,
+  nitro: {
+    preset: "vercel",
+  },
   runtimeConfig: {
     public: {
-      apiBase:
-        process.env.NUXT_PUBLIC_API_BASE || "https://gacha-sim.vercel.app/",
+      apiBase: "/api",
     },
   },
 });
