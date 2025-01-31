@@ -55,7 +55,11 @@
             : 'text-gray-500'
         "
       >
-        <a :href="char.link" target="_blank" class="flex justify-center">
+        <a
+          :href="'https://housamo-skill.netlify.app/charas/' + char.link"
+          target="_blank"
+          class="flex justify-center"
+        >
           <img
             :src="char.image"
             alt="Character"
@@ -240,7 +244,7 @@ const roll = (count) => {
       results.push({
         name: chosenChar.name,
         image: chosenChar.imgSrc,
-        link: chosenChar.link,
+        link: chosenChar.href,
         count: 1,
         rateUp: chosenChar.rateUp,
         rarity: chosenChar.rarity,
