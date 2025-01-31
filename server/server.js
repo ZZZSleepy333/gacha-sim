@@ -6,6 +6,7 @@ import cors from "cors";
 import multer from "multer";
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import http from "http";
 
 //const multer = require("multer");
 
@@ -16,7 +17,7 @@ cloudinary.config({
 });
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json()); // ✅ Fix lỗi req.body undefined
 app.use(express.urlencoded({ extended: true }));
@@ -172,6 +173,8 @@ app.get("/api/get_banners", async (req, res) => {
 
 export default app;
 
-// app.listen(PORT, () =>
-//   console.log("🚀 Server chạy tại http://localhost:${PORT}")
-// );
+const server = http.createServer(app);
+
+server.listen(PORT, () => {
+  console.log(`🚀 Server chạy tại http://localhost:${PORT}`);
+});
