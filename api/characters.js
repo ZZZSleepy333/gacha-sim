@@ -1,4 +1,5 @@
 import { MongoClient } from "mongodb";
+import * as cheerio from "cheerio";
 
 const MONGO_URI =
   "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
