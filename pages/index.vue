@@ -245,6 +245,7 @@ const roll = (count) => {
       rateUp: { ...rollHistory.value.rateUp },
       fiveStar: { ...rollHistory.value.fiveStar },
       fourStar: { ...rollHistory.value.fourStar },
+      threeStar: { ...rollHistory.value.threeStar },
     }
   );
 };
