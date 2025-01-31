@@ -46,19 +46,20 @@
       <div
         v-for="(char, name) in rollResults"
         :key="name"
+        class="flex flex-col items-center p-2 rounded-lg shadow-md"
         :class="
           char.rarity === 5
             ? 'bg-red-500 text-white'
-            : char.rarity === 4
+            : char.rarity === 4 && char.rateUp
             ? 'bg-purple-500 text-white'
             : 'text-gray-500'
         "
       >
-        <a :href="char.link" target="_blank">
+        <a :href="char.link" target="_blank" class="flex justify-center">
           <img
             :src="char.image"
             alt="Character"
-            class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md items-center"
+            class="w-20 h-20 md:w-24 md:h-24 object-cover rounded-lg shadow-md"
           />
         </a>
         <p class="mt-1 md:mt-2 font-semibold text-xs md:text-sm text-center">
