@@ -198,7 +198,7 @@ const saveInfo = async () => {
   }
 
   try {
-    const response = await fetch("/api/banners", {
+    const response = await fetch("/api/upload", {
       method: "POST",
       body: formData,
     });
