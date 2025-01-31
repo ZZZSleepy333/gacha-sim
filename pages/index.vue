@@ -158,7 +158,7 @@ const roll = (count) => {
     let rarity = 3;
 
     if (i === 9) {
-      rarityChance = Math.random() * 100;
+      rarityChance = Math.floor(Math.random() * 100);
 
       rarity = rarityChance < 96 ? 4 : 5;
     } else {
@@ -173,19 +173,19 @@ const roll = (count) => {
       if (rarity === 5) {
         chosenChar =
           Math.random() * 100 < 70 && rateUpPool.length > 0
-            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+            ? rateUpPool[Math.random() * rateUpPool.length]
+            : rarityPool[Math.random() * rarityPool.length];
       } else if (rarity === 4) {
         chosenChar =
           Math.random() * 100 < rateUpPool.length * 10 && rateUpPool.length > 0
-            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+            ? rateUpP[Math.random() * rateUpPool.length]
+            : rarityPool[Math.random() * rarityPool.length];
       } else {
         chosenChar =
           Math.random() * 100 < (rateUpPool.length - 1) * 10 &&
           rateUpPool.length > 0
-            ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-            : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+            ? rateUpPool[Math.random() * rateUpPool.length]
+            : rarityPool[Math.random() * rarityPool.length];
       }
     }
 
