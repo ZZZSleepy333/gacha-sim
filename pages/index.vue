@@ -138,6 +138,7 @@ const rollHistory = ref({
   rateUp: {},
   fiveStar: {},
   fourStar: {},
+  threeStar: {},
 });
 
 const fetchBanners = async () => {
