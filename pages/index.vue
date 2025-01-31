@@ -56,7 +56,7 @@
         "
       >
         <a
-          :href="'https://housamo-skill.netlify.app/charas/' + char.link"
+          :href="'https://housamo-skill.netlify.app' + char.link"
           target="_blank"
           class="flex justify-center"
         >
