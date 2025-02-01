@@ -239,7 +239,7 @@ const roll = (count) => {
 
     // Chọn nhân vật dựa trên tỷ lệ mới
     const rollRate = Math.random() * 100;
-    if (rateUpPool.length > 0 && rollRate < rateUpChance) {
+    if (rateUpPool.length > 0 && rollRate < (rateUpChance * 100) / 80) {
       chosenChar = rateUpPool[Math.floor(Math.random() * rateUpPool.length)];
     } else {
       chosenChar =

@@ -193,7 +193,14 @@ const saveInfo = async () => {
     JSON.stringify(Object.values(selectedCharacters.value))
   );
 
+  // Kiểm tra ảnh có hợp lệ không
   if (selectedImage.value) {
+    if (!(selectedImage.value instanceof File)) {
+      console.error("❌ Hình ảnh không hợp lệ!");
+      saveMessage.value = "Hình ảnh không hợp lệ!";
+      isSaving.value = false;
+      return;
+    }
     formData.append("image", selectedImage.value);
   }
 
@@ -202,6 +209,11 @@ const saveInfo = async () => {
       method: "POST",
       body: formData,
     });
+
+    // Kiểm tra nếu API trả về lỗi
+    if (!response.ok) {
+      throw new Error(`Lỗi API: ${response.statusText}`);
+    }
 
     const result = await response.json();
 
@@ -219,11 +231,14 @@ const saveInfo = async () => {
   }
 };
 
-// ✅ Sửa `uploadImage()`
 const selectedImage = ref(null);
 
 const uploadImage = (event) => {
-  selectedImage.value = event.target.files[0];
+  if (event.target.files.length > 0) {
+    selectedImage.value = event.target.files[0];
+  } else {
+    selectedImage.value = null;
+  }
 };
 
 onMounted(fetchCharacters);
