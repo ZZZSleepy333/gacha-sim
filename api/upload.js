@@ -34,13 +34,15 @@ export default async function handler(req, res) {
     console.log("🖼️ File nhận được:", files);
 
     const { name, characters } = fields;
+    const file = files.image; // Giả sử tên input file là 'image'
+    const imageUrl = `/uploads/${path.basename(file.path)}`; // Đường dẫn lưu trữ hình ảnh
 
     try {
       const db = await connectDB();
       const result = await db.collection("banners").insertOne({
         name,
         characters: JSON.parse(characters),
-        files,
+        imageUrl,
       });
 
       console.log("✅ Banner đã lưu!", result.insertedId);
