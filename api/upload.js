@@ -2,8 +2,9 @@ import { IncomingForm } from "formidable";
 import fs from "fs/promises";
 import { MongoClient } from "mongodb";
 
-const MONGO_URI = "your_mongo_uri";
-const DB_NAME = "your_db_name";
+const MONGO_URI =
+  "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
+const DB_NAME = "banner_db";
 
 let db;
 
