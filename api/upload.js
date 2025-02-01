@@ -44,32 +44,59 @@ export const config = {
 const uploadMiddleware = upload.single("image");
 
 export default async function handler(req, res) {
-  const db = await connectDB();
+  console.log("📥 Nhận request:", req.method);
 
-  uploadMiddleware(req, res, async (err) => {
-    if (err) {
-      console.error("❌ Lỗi upload Multer:", err);
-      return res.status(500).json({ error: "Lỗi upload file!" });
-    }
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Chỉ hỗ trợ phương thức POST!" });
+  }
 
-    try {
-      const { name, characters } = req.body;
-      if (!name || !characters) {
-        return res.status(400).json({ error: "Thiếu dữ liệu bắt buộc!" });
+  try {
+    console.log("🛠️ Kết nối database...");
+    const db = await connectDB();
+
+    console.log("📤 Xử lý FormData...");
+    upload.single("image")(req, res, async (err) => {
+      if (err) {
+        console.error("❌ Lỗi upload hình ảnh:", err);
+        return res.status(500).json({ error: "Lỗi upload hình ảnh" });
       }
 
-      let imageUrl = req.file ? req.file.path : null;
+      console.log("✅ FormData xử lý thành công!", req.body);
 
+      const { name, characters } = req.body;
+      if (!name || !characters) {
+        console.error("❌ Thiếu dữ liệu!", { name, characters });
+        return res
+          .status(400)
+          .json({ error: "Tên và danh sách nhân vật là bắt buộc!" });
+      }
+
+      let parsedCharacters;
+      try {
+        parsedCharacters = JSON.parse(characters);
+      } catch (err) {
+        console.error("❌ Dữ liệu nhân vật không hợp lệ!", characters);
+        return res
+          .status(400)
+          .json({ error: "Dữ liệu nhân vật không hợp lệ!" });
+      }
+
+      let imageUrl = req.file ? req.file.path : null; // ✅ Lấy URL ảnh từ Cloudinary
+      console.log("🖼️ Ảnh upload:", imageUrl);
+
+      console.log("📦 Lưu vào MongoDB...");
       const result = await db.collection("banners").insertOne({
         name,
-        characters: JSON.parse(characters),
+        characters: parsedCharacters,
         imageUrl,
       });
 
+      console.log("✅ Banner đã lưu!", result.insertedId);
+
       res.json({ message: "Banner đã lưu!", id: result.insertedId, imageUrl });
-    } catch (error) {
-      console.error("❌ Lỗi xử lý server:", error);
-      res.status(500).json({ error: "Lỗi server" });
-    }
-  });
+    });
+  } catch (error) {
+    console.error("❌ Lỗi server:", error);
+    res.status(500).json({ error: "Lỗi server" });
+  }
 }
