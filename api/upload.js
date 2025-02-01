@@ -41,8 +41,6 @@ export const config = {
   },
 };
 
-const uploadMiddleware = upload.single("image");
-
 export default async function handler(req, res) {
   console.log("📥 Nhận request:", req.method);
 
@@ -81,15 +79,26 @@ export default async function handler(req, res) {
           .json({ error: "Dữ liệu nhân vật không hợp lệ!" });
       }
 
-      let imageUrl = req.file ? req.file.path : null;
-      console.log("🖼️ Ảnh upload:", req.file);
+      const form = new formidable.IncomingForm();
+      form.uploadDir = "/tmp"; // Chỉ lưu tạm vì Vercel không cho lưu file lâu dài
+      form.keepExtensions = true;
 
-      console.log("📦 Lưu vào MongoDB...");
+      form.parse(req, async (err, fields, files) => {
+        if (err) {
+          console.error("❌ Lỗi xử lý upload:", err);
+          return res.status(500).json({ error: "Lỗi upload hình ảnh" });
+        }
+
+        console.log("📝 Data nhận được:", fields);
+        console.log("🖼️ File nhận được:", files);
+
+        //return res.json({ message: "Upload thành công!", fields, files });
+      });
       try {
         const result = await db.collection("banners").insertOne({
           name,
           characters: parsedCharacters,
-          imageUrl,
+          files,
         });
 
         console.log("✅ Banner đã lưu!", result.insertedId);
@@ -97,7 +106,7 @@ export default async function handler(req, res) {
         res.json({
           message: "Banner đã lưu!",
           id: result.insertedId,
-          imageUrl,
+          files,
         });
       } catch (dbError) {
         console.error("❌ Lỗi khi lưu vào MongoDB:", dbError);
