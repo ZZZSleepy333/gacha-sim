@@ -1,10 +1,18 @@
 import { IncomingForm } from "formidable";
 import fs from "fs/promises";
 import { MongoClient } from "mongodb";
+import path from "path";
+import cloudinary from "cloudinary";
 
 const MONGO_URI =
   "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
 const DB_NAME = "banner_db";
+
+cloudinary.config({
+  cloud_name: "dhdhxoqxs",
+  api_key: 224474966178738,
+  api_secret: "eBDr5tU0_CyUI2pc5Kn8OGmDEmQ",
+});
 
 let db;
 
@@ -35,21 +43,27 @@ export default async function handler(req, res) {
 
     const { name, characters } = fields;
     const file = files.image; // Giả sử tên input file là 'image'
-    const imageUrl = `/uploads/${path.basename(file.path)}`; // Đường dẫn lưu trữ hình ảnh
 
     try {
+      // Tải lên Cloudinary
+      const result = await cloudinary.v2.uploader.upload(file.path, {
+        folder: "banners", // Thư mục trên Cloudinary
+      });
+
+      const imageUrl = result.secure_url; // URL của hình ảnh trên Cloudinary
+
       const db = await connectDB();
-      const result = await db.collection("banners").insertOne({
+      const dbResult = await db.collection("banners").insertOne({
         name,
         characters: JSON.parse(characters),
         imageUrl,
       });
 
-      console.log("✅ Banner đã lưu!", result.insertedId);
+      console.log("✅ Banner đã lưu!", dbResult.insertedId);
 
       res.json({
         message: "Banner đã lưu!",
-        id: result.insertedId,
+        id: dbResult.insertedId,
       });
     } catch (error) {
       console.error("❌ Lỗi khi thêm dữ liệu vào MongoDB:", error);
