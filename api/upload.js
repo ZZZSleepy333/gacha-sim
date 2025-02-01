@@ -46,7 +46,7 @@ export default async function handler(req, res) {
 
     try {
       // Tải lên Cloudinary
-      const result = await cloudinary.v2.uploader.upload(file.path, {
+      const result = await cloudinary.v2.uploader.upload(file.filepath, {
         folder: "banners", // Thư mục trên Cloudinary
       });
 
