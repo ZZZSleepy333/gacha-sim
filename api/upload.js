@@ -1,8 +1,8 @@
-import { IncomingForm } from "formidable";
-import fs from "fs/promises";
+import multer from "multer";
 import { MongoClient } from "mongodb";
-import path from "path";
 import cloudinary from "cloudinary";
+import { promisify } from "util";
+import fs from "fs";
 
 const MONGO_URI =
   "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
@@ -27,37 +27,55 @@ const connectDB = async () => {
   return db;
 };
 
-export default async function handler(req, res) {
-  const form = new IncomingForm();
-  form.uploadDir = "/tmp"; // Chỉ lưu tạm vì Vercel không cho lưu file lâu dài
-  form.keepExtensions = true;
+// Cấu hình multer để lưu file tạm thời
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "/tmp"); // Thư mục tạm để lưu file
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
+});
 
-  form.parse(req, async (err, fields, files) => {
+const upload = multer({ storage });
+
+export const config = {
+  api: {
+    bodyParser: false, // Tắt bodyParser để multer xử lý
+  },
+};
+
+export default async function handler(req, res) {
+  upload.single("image")(req, res, async (err) => {
     if (err) {
       console.error("❌ Lỗi xử lý upload:", err);
       return res.status(500).json({ error: "Lỗi upload hình ảnh" });
     }
 
-    console.log("📝 Data nhận được:", fields);
-    console.log("🖼️ File nhận được:", files);
+    const { name, characters } = req.body;
+    const file = req.file;
 
-    const { name, characters } = fields;
-    const file = files.image; // Giả sử tên input file là 'image'
+    if (!file) {
+      console.error("❌ Không tìm thấy file upload");
+      return res.status(400).json({ error: "Không tìm thấy file upload" });
+    }
 
     try {
       // Tải lên Cloudinary
-      const result = await cloudinary.v2.uploader.upload(file.filepath, {
+      const result = await cloudinary.v2.uploader.upload(file.path, {
         folder: "banners", // Thư mục trên Cloudinary
       });
 
       const imageUrl = result.secure_url; // URL của hình ảnh trên Cloudinary
+
+      // Xóa file tạm sau khi upload lên Cloudinary
+      await promisify(fs.unlink)(file.path);
 
       const db = await connectDB();
       const dbResult = await db.collection("banners").insertOne({
         name,
         characters: JSON.parse(characters),
         imageUrl,
-        file,
       });
 
       console.log("✅ Banner đã lưu!", dbResult.insertedId);

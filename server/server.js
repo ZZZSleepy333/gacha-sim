@@ -9,6 +9,10 @@ import { express } from "express";
 
 //const multer = require("multer");
 
+const MONGO_URI =
+  "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
+const DB_NAME = "banner_db";
+
 cloudinary.config({
   cloud_name: "dhdhxoqxs",
   api_key: 224474966178738,
@@ -33,9 +37,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // Kết nối MongoDB
-const MONGO_URI =
-  "mongodb+srv://namnguyenhoang0903:01202902494@cluster0.su7jf.mongodb.net/";
-const DB_NAME = "banner_db";
+
 const COLLECTION_NAME = "characters";
 
 let db, charactersCollection;
