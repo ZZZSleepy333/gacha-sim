@@ -18,12 +18,12 @@
         @click="selectBanner(banner)"
       >
         <img
-          :src="banner.imageUrl"
+          :src="banner.imageUrl || banner.files.image[0].filepath"
           alt="Banner"
           class="w-full h-24 md:h-32 object-cover rounded"
         />
         <p class="text-center mt-2 font-semibold text-sm md:text-base">
-          {{ banner.name }}
+          {{ banner.name || banner.name[0] }}
         </p>
       </div>
     </div>
