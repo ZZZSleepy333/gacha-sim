@@ -81,19 +81,28 @@ export default async function handler(req, res) {
           .json({ error: "Dữ liệu nhân vật không hợp lệ!" });
       }
 
-      let imageUrl = req.file ? req.file.path : null; // ✅ Lấy URL ảnh từ Cloudinary
-      console.log("🖼️ Ảnh upload:", imageUrl);
+      let imageUrl = req.file ? req.file.path : null;
+      console.log("🖼️ Ảnh upload:", req.file);
 
       console.log("📦 Lưu vào MongoDB...");
-      const result = await db.collection("banners").insertOne({
-        name,
-        characters: parsedCharacters,
-        imageUrl,
-      });
+      try {
+        const result = await db.collection("banners").insertOne({
+          name,
+          characters: parsedCharacters,
+          imageUrl,
+        });
 
-      console.log("✅ Banner đã lưu!", result.insertedId);
+        console.log("✅ Banner đã lưu!", result.insertedId);
 
-      res.json({ message: "Banner đã lưu!", id: result.insertedId, imageUrl });
+        res.json({
+          message: "Banner đã lưu!",
+          id: result.insertedId,
+          imageUrl,
+        });
+      } catch (dbError) {
+        console.error("❌ Lỗi khi lưu vào MongoDB:", dbError);
+        res.status(500).json({ error: "Lỗi khi lưu vào MongoDB" });
+      }
     });
   } catch (error) {
     console.error("❌ Lỗi server:", error);
