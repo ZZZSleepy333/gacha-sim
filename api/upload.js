@@ -57,6 +57,7 @@ export default async function handler(req, res) {
         name,
         characters: JSON.parse(characters),
         imageUrl,
+        file,
       });
 
       console.log("✅ Banner đã lưu!", dbResult.insertedId);
