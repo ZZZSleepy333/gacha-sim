@@ -193,9 +193,9 @@ const saveInfo = async () => {
     JSON.stringify(Object.values(selectedCharacters.value))
   );
 
-  // if (selectedImage.value) {
-  //   formData.append("image", selectedImage.value);
-  // }
+  if (selectedImage.value) {
+    formData.append("image", selectedImage.value);
+  }
 
   try {
     const response = await fetch("/api/upload", {

@@ -185,29 +185,22 @@ const roll = (count) => {
     let rarityChance = Math.random() * 100;
     let rarity = 3;
 
+    // Xác định tỷ lệ rớt sao dựa trên vị trí roll
     if (i === 9) {
       rarityChance = Math.random() * 100;
       rarity = rarityChance < 96 ? 4 : 5;
     } else {
       if (rarityChance < 2) rarity = 5;
-      else if (rarityChance < 18) rarity = 4;
+      else if (rarityChance < 20) rarity = 4;
     }
 
-    // Loại bỏ nhân vật có count >= 100
+    // Lọc danh sách nhân vật theo sao
     const rarityPool = characters.filter((char) => {
       const historyCount =
-        (rollHistory.value.rateUp[char.name]
-          ? rollHistory.value.rateUp[char.name].count
-          : 0) +
-        (rollHistory.value.fiveStar[char.name]
-          ? rollHistory.value.fiveStar[char.name].count
-          : 0) +
-        (rollHistory.value.fourStar[char.name]
-          ? rollHistory.value.fourStar[char.name].count
-          : 0) +
-        (rollHistory.value.threeStar[char.name]
-          ? rollHistory.value.threeStar[char.name].count
-          : 0);
+        (rollHistory.value.rateUp[char.name]?.count || 0) +
+        (rollHistory.value.fiveStar[char.name]?.count || 0) +
+        (rollHistory.value.fourStar[char.name]?.count || 0) +
+        (rollHistory.value.threeStar[char.name]?.count || 0);
       return char.rarity === rarity && historyCount < 100;
     });
 
@@ -215,23 +208,30 @@ const roll = (count) => {
 
     let chosenChar;
     const rateUpPool = rarityPool.filter((char) => char.rateUp);
+    const nonRateUpPool = rarityPool.filter((char) => !char.rateUp);
+
+    // Tính toán tỷ lệ rơi theo số lượng nhân vật rate-up
+    let rateUpChance = 0;
+    let nonRateUpChance = 0;
 
     if (rarity === 5) {
-      chosenChar =
-        Math.random() * 100 < 70 && rateUpPool.length > 0
-          ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-          : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+      rateUpChance = 0.729 * rateUpPool.length;
+      nonRateUpChance = (2 - rateUpChance) / (nonRateUpPool.length || 1);
     } else if (rarity === 4) {
-      chosenChar =
-        Math.random() * 100 < rateUpPool.length * 10 && rateUpPool.length > 0
-          ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-          : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+      rateUpChance = 1.789 * rateUpPool.length;
+      nonRateUpChance = (18 - rateUpChance) / (nonRateUpPool.length || 1);
+    } else {
+      rateUpChance = 6.35 * rateUpPool.length;
+      nonRateUpChance = (79 - rateUpChance) / (nonRateUpPool.length || 1);
+    }
+
+    // Chọn nhân vật dựa trên tỷ lệ mới
+    const rollRate = Math.random() * 100;
+    if (rateUpPool.length > 0 && rollRate < rateUpChance) {
+      chosenChar = rateUpPool[Math.floor(Math.random() * rateUpPool.length)];
     } else {
       chosenChar =
-        Math.random() * 100 < (rateUpPool.length - 1) * 10 &&
-        rateUpPool.length > 0
-          ? rateUpPool[Math.floor(Math.random() * rateUpPool.length)]
-          : rarityPool[Math.floor(Math.random() * rarityPool.length)];
+        nonRateUpPool[Math.floor(Math.random() * nonRateUpPool.length)];
     }
 
     if (chosenChar) {
