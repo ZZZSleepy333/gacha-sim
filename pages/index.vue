@@ -184,14 +184,25 @@ const roll = (count) => {
   for (let i = 0; i < count; i++) {
     let rarityChance = Math.random() * 100;
     let rarity = 3;
+    let chance = 80;
 
     // Xác định tỷ lệ rớt sao dựa trên vị trí roll
     if (i === 9) {
       rarityChance = Math.random() * 100;
       rarity = rarityChance < 96 ? 4 : 5;
+      if (rarity === 4) {
+        chance = 96;
+      } else {
+        chance = 4;
+      }
     } else {
-      if (rarityChance < 2) rarity = 5;
-      else if (rarityChance < 20) rarity = 4;
+      if (rarityChance < 2) {
+        rarity = 5;
+        chance = 2;
+      } else if (rarityChance < 18) {
+        rarity = 4;
+        chance = 18;
+      }
     }
 
     // Lọc danh sách nhân vật theo sao
@@ -239,7 +250,7 @@ const roll = (count) => {
 
     // Chọn nhân vật dựa trên tỷ lệ mới
     const rollRate = Math.random() * 100;
-    if (rateUpPool.length > 0 && rollRate < (rateUpChance * 100) / 80) {
+    if (rateUpPool.length > 0 && rollRate < (rateUpChance * 100) / chance) {
       chosenChar = rateUpPool[Math.floor(Math.random() * rateUpPool.length)];
     } else {
       chosenChar =
