@@ -215,14 +215,26 @@ const roll = (count) => {
     let nonRateUpChance = 0;
 
     if (rarity === 5) {
-      rateUpChance = 0.729 * rateUpPool.length;
-      nonRateUpChance = (2 - rateUpChance) / (nonRateUpPool.length || 1);
+      if (i === 9) {
+        rateUpChance = 1.459 * rateUpPool.length;
+        nonRateUpChance = (4 - rateUpChance) / (nonRateUpPool.length || 1);
+      } else {
+        rateUpChance = 0.729 * rateUpPool.length;
+        nonRateUpChance = (2 - rateUpChance) / (nonRateUpPool.length || 1);
+      }
     } else if (rarity === 4) {
+      if (i === 9) {
+        rateUpChance = 9.549 * rateUpPool.length;
+        nonRateUpChance = (96 - rateUpChance) / (nonRateUpPool.length || 1);
+      } else {
+        rateUpChance = 1.789 * rateUpPool.length;
+        nonRateUpChance = (18 - rateUpChance) / (nonRateUpPool.length || 1);
+      }
       rateUpChance = 1.789 * rateUpPool.length;
       nonRateUpChance = (18 - rateUpChance) / (nonRateUpPool.length || 1);
     } else {
       rateUpChance = 6.35 * rateUpPool.length;
-      nonRateUpChance = (79 - rateUpChance) / (nonRateUpPool.length || 1);
+      nonRateUpChance = (80 - rateUpChance) / (nonRateUpPool.length || 1);
     }
 
     // Chọn nhân vật dựa trên tỷ lệ mới

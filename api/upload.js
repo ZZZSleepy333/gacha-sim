@@ -22,6 +22,18 @@ const connectDB = async () => {
   return db;
 };
 
+const uploadImageToCloudinary = async (filePath) => {
+  try {
+    const result = await cloudinary.uploader.upload(filePath, {
+      folder: "banners",
+    });
+    return result.secure_url;
+  } catch (error) {
+    console.error("❌ Lỗi khi upload Cloudinary:", error);
+    throw new Error("Upload ảnh thất bại!");
+  }
+};
+
 // 👇 Cấu hình Next.js để xử lý file upload
 export const config = {
   api: {
@@ -29,54 +41,34 @@ export const config = {
   },
 };
 
+const uploadMiddleware = upload.single("image");
+
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method Not Allowed" });
-  }
-
   const db = await connectDB();
-  const form = new formidable.IncomingForm();
-  form.uploadDir = "/tmp"; // Lưu file tạm trước khi upload
-  form.keepExtensions = true;
 
-  form.parse(req, async (err, fields, files) => {
+  uploadMiddleware(req, res, async (err) => {
     if (err) {
-      return res.status(500).json({ error: "Lỗi phân tích form" });
+      console.error("❌ Lỗi upload Multer:", err);
+      return res.status(500).json({ error: "Lỗi upload file!" });
     }
 
     try {
-      const { name, characters } = fields;
-      const imageFile = files.image;
-
-      if (!name || !characters || !imageFile) {
-        return res
-          .status(400)
-          .json({ error: "Tên, danh sách nhân vật & hình ảnh là bắt buộc!" });
+      const { name, characters } = req.body;
+      if (!name || !characters) {
+        return res.status(400).json({ error: "Thiếu dữ liệu bắt buộc!" });
       }
 
-      // Upload ảnh lên Cloudinary
-      const imagePath = imageFile.filepath;
-      const uploadResult = await cloudinary.uploader.upload(imagePath, {
-        folder: "banners",
-      });
+      let imageUrl = req.file ? req.file.path : null;
 
-      // Lưu vào MongoDB
       const result = await db.collection("banners").insertOne({
         name,
         characters: JSON.parse(characters),
-        imageUrl: uploadResult.secure_url,
+        imageUrl,
       });
 
-      // Xóa file tạm sau khi upload
-      await fs.unlink(imagePath);
-
-      res.json({
-        message: "Banner đã lưu!",
-        id: result.insertedId,
-        imageUrl: uploadResult.secure_url,
-      });
+      res.json({ message: "Banner đã lưu!", id: result.insertedId, imageUrl });
     } catch (error) {
-      console.error("❌ Lỗi khi lưu banner:", error);
+      console.error("❌ Lỗi xử lý server:", error);
       res.status(500).json({ error: "Lỗi server" });
     }
   });
